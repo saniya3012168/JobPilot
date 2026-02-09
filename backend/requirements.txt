@@ -1,3 +1,6 @@
 flask
-flask_sqlalchemy
-flask_cors
+flask-cors
+pymongo
+python-dotenv
+bcrypt
+pyjwt
