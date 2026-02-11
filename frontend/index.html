@@ -8,24 +8,132 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Inline enhancements for attractiveness */
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      font-family: 'Poppins', sans-serif;
+    }
+    .hero {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      position: relative;
+      overflow: hidden;
+      min-height: 60vh;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://source.unsplash.com/featured/?job,office') no-repeat center/cover;
+      opacity: 0.1;
+      z-index: 0;
+    }
+    .hero .container {
+      position: relative;
+      z-index: 1;
+    }
+    .hero h2 {
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      animation: fadeInUp 1s ease-out;
+    }
+    .hero p {
+      animation: fadeInUp 1.2s ease-out;
+    }
+    .search-bar .btn {
+      background: #28a745;
+      border: none;
+      animation: pulse 2s infinite;
+    }
+    .job-card {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      margin-bottom: 30px;
+      overflow: hidden;
+    }
+    .job-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+    .job-card img {
+      height: 150px;
+      object-fit: cover;
+    }
+    .stats {
+      background: #fff;
+      padding: 40px 0;
+      text-align: center;
+    }
+    .stat-item {
+      margin: 20px;
+    }
+    .stat-item h4 {
+      color: #667eea;
+      font-weight: 700;
+    }
+    .testimonials {
+      background: #f8f9fa;
+      padding: 40px 0;
+    }
+    .testimonial-card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      margin: 10px;
+    }
+    .dashboard-tabs .nav-link {
+      border-radius: 10px;
+    }
+    .back-to-top {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: none;
+      z-index: 1000;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    @media (max-width: 768px) {
+      .hero h2 { font-size: 2rem; }
+      .job-card { margin-bottom: 20px; }
+    }
+  </style>
 </head>
 <body>
   <!-- Header -->
-  <header class="bg-primary text-white py-3 sticky-top">
+  <header class="bg-primary text-white py-3 sticky-top shadow">
     <div class="container d-flex justify-content-between align-items-center">
-      <h1 class="h4 mb-0"><i class="fas fa-rocket"></i> JobPilot</h1>
+      <h1 class="h4 mb-0"><i class="fas fa-rocket text-warning"></i> JobPilot</h1>
       <nav>
-        <button class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
-        <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#signupModal">Sign Up</button>
+        <button class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#loginModal"><i class="fas fa-sign-in-alt"></i> Login</button>
+        <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#signupModal"><i class="fas fa-user-plus"></i> Sign Up</button>
       </nav>
     </div>
   </header>
 
   <!-- Hero Section -->
-  <section class="hero bg-gradient-primary text-white py-5">
+  <section class="hero text-white py-5">
     <div class="container text-center">
-      <h2 class="display-4 fw-bold">Find Your Dream Job Today</h2>
-      <p class="lead">Connect with top employers and land the perfect role.</p>
+      <h2 class="display-4 fw-bold mb-3">Find Your Dream Job Today</h2>
+      <p class="lead mb-4">Connect with top employers, discover opportunities, and land the perfect role in your career journey.</p>
       <div class="search-bar mt-4">
         <div class="row g-2 justify-content-center">
           <div class="col-md-4">
@@ -42,12 +150,63 @@
     </div>
   </section>
 
+  <!-- Stats Section -->
+  <section class="stats">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3 stat-item">
+          <h4>10,000+</h4>
+          <p>Jobs Posted</p>
+        </div>
+        <div class="col-md-3 stat-item">
+          <h4>5,000+</h4>
+          <p>Happy Users</p>
+        </div>
+        <div class="col-md-3 stat-item">
+          <h4>500+</h4>
+          <p>Companies</p>
+        </div>
+        <div class="col-md-3 stat-item">
+          <h4>24/7</h4>
+          <p>Support</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Job Listings -->
   <section class="py-5">
     <div class="container">
-      <h3 class="text-center mb-4">Featured Jobs</h3>
+      <h3 class="text-center mb-4 fw-bold">Featured Jobs</h3>
       <div class="row" id="jobList">
         <!-- Jobs will be populated here -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="testimonials">
+    <div class="container">
+      <h3 class="text-center mb-4 fw-bold">What Our Users Say</h3>
+      <div class="row justify-content-center">
+        <div class="col-md-4">
+          <div class="testimonial-card">
+            <p>"JobPilot helped me land my dream job in weeks!"</p>
+            <cite>- Alex Johnson</cite>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="testimonial-card">
+            <p>"Easy to use and full of great opportunities."</p>
+            <cite>- Maria Garcia</cite>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="testimonial-card">
+            <p>"The best job search platform I've used."</p>
+            <cite>- David Lee</cite>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -55,16 +214,22 @@
   <!-- Dashboard (Hidden by default, shown after login) -->
   <section id="dashboard" class="py-5 bg-light d-none">
     <div class="container">
-      <h3 class="text-center mb-4">Your Dashboard</h3>
-      <div class="row">
-        <div class="col-md-6">
-          <h5>Applied Jobs</h5>
+      <h3 class="text-center mb-4 fw-bold">Your Dashboard</h3>
+      <ul class="nav nav-tabs dashboard-tabs" id="dashboardTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="applied-tab" data-bs-toggle="tab" data-bs-target="#applied" type="button" role="tab">Applied Jobs</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="post-tab" data-bs-toggle="tab" data-bs-target="#post" type="button" role="tab">Post a Job</button>
+        </li>
+      </ul>
+      <div class="tab-content mt-4" id="dashboardTabsContent">
+        <div class="tab-pane fade show active" id="applied" role="tabpanel">
           <ul id="appliedJobs" class="list-group">
             <!-- Applied jobs will be listed here -->
           </ul>
         </div>
-        <div class="col-md-6">
-          <h5>Post a Job (Employers)</h5>
+        <div class="tab-pane fade" id="post" role="tabpanel">
           <form id="postJobForm">
             <input type="text" class="form-control mb-2" placeholder="Job Title" required>
             <input type="text" class="form-control mb-2" placeholder="Company" required>
@@ -79,17 +244,20 @@
   <!-- Footer -->
   <footer class="bg-dark text-white py-4">
     <div class="container text-center">
-      <p>&copy; 2023 JobPilot. All rights reserved. <i class="fas fa-heart text-danger"></i></p>
+      <p>&copy; 2023 JobPilot. All rights reserved. <i class="fas fa-heart text-danger"></i> Made with love.</p>
     </div>
   </footer>
+
+  <!-- Back to Top Button -->
+  <button class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})"><i class="fas fa-arrow-up"></i></button>
 
   <!-- Login Modal -->
   <div class="modal fade" id="loginModal" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Login</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title"><i class="fas fa-sign-in-alt"></i> Login</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
           <form id="loginForm">
@@ -106,16 +274,16 @@
   <div class="modal fade" id="signupModal" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Sign Up</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title"><i class="fas fa-user-plus"></i> Sign Up</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
           <form id="signupForm">
             <input type="text" class="form-control mb-2" placeholder="Name" required>
             <input type="email" class="form-control mb-2" placeholder="Email" required>
             <input type="password" class="form-control mb-2" placeholder="Password" required>
-            <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+            <button type="submit" class="btn btn-success w-100">Sign Up</button>
           </form>
         </div>
       </div>
@@ -124,5 +292,16 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="script.js"></script>
+  <script>
+    // Show back-to-top button on scroll
+    window.addEventListener('scroll', () => {
+      const backToTop = document.querySelector('.back-to-top');
+      if (window.scrollY > 300) {
+        backToTop.style.display = 'block';
+      } else {
+        backToTop.style.display = 'none';
+      }
+    });
+  </script>
 </body>
 </html>
