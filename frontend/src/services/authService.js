@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import api from './api';
 
 export const authService = {
@@ -13,3 +14,9 @@ export const authService = {
     return api.get('/auth/me');
   }
 };
+=======
+import API from "./api";
+
+export const register = (data) => API.post("/register", data);
+export const login = (data) => API.post("/login", data);
+>>>>>>> main
