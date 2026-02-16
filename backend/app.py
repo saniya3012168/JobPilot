@@ -68,24 +68,25 @@ def create_app():
     return app
 
 
-# ==================================
-# Run Server (Local Development Only)
-# ==================================
+# ==================================================
+# 🔥 IMPORTANT: Required for Gunicorn (Render)
+# ==================================================
+app = create_app()
+
+
+# ==================================================
+# Run Locally (Only for Development)
+# ==================================================
 if __name__ == "__main__":
-    app = create_app()
+    port = int(os.environ.get("PORT", 5000))
 
     print("=" * 50)
     print("🚀 Starting JobPilot API server...")
     print("=" * 50)
-    print("📍 Server: http://localhost:5000")
-    print("📍 Health: http://localhost:5000/api/health")
+    print(f"📍 Server: http://localhost:{port}")
     print("📍 Database: MongoDB Atlas ☁️")
     print("=" * 50)
 
-    # Render automatically provides PORT
-    port = int(os.environ.get("PORT", 5000))
-
-    # 🔥 IMPORTANT: Disable reloader on Windows to prevent WinError 10038
     app.run(
         host="0.0.0.0",
         port=port,
