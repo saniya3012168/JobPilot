@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -31,3 +32,22 @@ const Navbar = () => {
 };
 
 export default Navbar;
+=======
+import { Link } from "react-router-dom";
+
+export default function Navbar() {
+  const logout = () => {
+    localStorage.removeItem("token");
+    window.location = "/login";
+  };
+
+  return (
+    <nav>
+      <Link to="/">Home</Link>
+      <Link to="/jobs">Jobs</Link>
+      <Link to="/profile">Profile</Link>
+      <button onClick={logout}>Logout</button>
+    </nav>
+  );
+}
+>>>>>>> main
