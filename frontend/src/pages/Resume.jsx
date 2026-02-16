@@ -1,97 +1,98 @@
-<<<<<<< HEAD
-import React, { useState, useEffect } from 'react';
-import Navbar from '../components/Navbar';
-import Sidebar from '../components/Sidebar';
-import { jobService } from '../services/jobService';
+import React, { useState, useEffect } from "react";
+import Navbar from "../components/Navbar";
+import Sidebar from "../components/Sidebar";
+import { jobService } from "../services/jobService";
 
 const Resume = () => {
   const [resumes, setResumes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  
+
   useEffect(() => {
     fetchResumes();
   }, []);
-  
+
   const fetchResumes = async () => {
     try {
       const response = await jobService.getAllResumes();
-      setResumes(response.data.resumes);
+      setResumes(response.data.resumes || []);
     } catch (error) {
-      console.error('Error fetching resumes:', error);
+      console.error("Error fetching resumes:", error);
     } finally {
       setLoading(false);
     }
   };
-  
+
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
   };
-  
+
   const handleUpload = async (e) => {
     e.preventDefault();
-    
+
     if (!selectedFile) {
-      alert('Please select a file');
+      alert("Please select a file");
       return;
     }
-    
+
     const formData = new FormData();
-    formData.append('file', selectedFile);
-    
+    formData.append("file", selectedFile);
+
     setUploading(true);
-    
+
     try {
       await jobService.uploadResume(formData);
       setSelectedFile(null);
-      document.getElementById('file-input').value = '';
+      document.getElementById("file-input").value = "";
       fetchResumes();
-      alert('Resume uploaded successfully!');
+      alert("Resume uploaded successfully!");
     } catch (error) {
-      console.error('Error uploading resume:', error);
-      alert('Failed to upload resume');
+      console.error("Error uploading resume:", error);
+      alert("Failed to upload resume");
     } finally {
       setUploading(false);
     }
   };
-  
+
   const handleDelete = async (resumeId) => {
-    if (window.confirm('Are you sure you want to delete this resume?')) {
+    if (window.confirm("Are you sure you want to delete this resume?")) {
       try {
         await jobService.deleteResume(resumeId);
         fetchResumes();
       } catch (error) {
-        console.error('Error deleting resume:', error);
-        alert('Failed to delete resume');
+        console.error("Error deleting resume:", error);
+        alert("Failed to delete resume");
       }
     }
   };
-  
+
   const handleDownload = async (resumeId, filename) => {
     try {
       const response = await jobService.downloadResume(resumeId);
       const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', filename);
+      link.setAttribute("download", filename);
       document.body.appendChild(link);
       link.click();
       link.remove();
     } catch (error) {
-      console.error('Error downloading resume:', error);
-      alert('Failed to download resume');
+      console.error("Error downloading resume:", error);
+      alert("Failed to download resume");
     }
   };
-  
+
   const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
+    if (!bytes) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB'];
+    const sizes = ["Bytes", "KB", "MB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    return (
+      Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i]
+    );
   };
-  
+
   return (
     <div className="app-layout">
       <Navbar />
@@ -101,7 +102,7 @@ const Resume = () => {
           <div className="page-header">
             <h1>Resume Management</h1>
           </div>
-          
+
           <div className="upload-section">
             <h2>Upload New Resume</h2>
             <form onSubmit={handleUpload} className="upload-form">
@@ -114,18 +115,26 @@ const Resume = () => {
                   accept=".pdf,.doc,.docx,.txt"
                   required
                 />
-                {selectedFile && <p className="file-name">Selected: {selectedFile.name}</p>}
+                {selectedFile && (
+                  <p className="file-name">
+                    Selected: {selectedFile.name}
+                  </p>
+                )}
               </div>
-              
-              <button type="submit" className="btn btn-primary" disabled={uploading}>
-                {uploading ? 'Uploading...' : 'Upload Resume'}
+
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={uploading}
+              >
+                {uploading ? "Uploading..." : "Upload Resume"}
               </button>
             </form>
           </div>
-          
+
           <div className="resumes-section">
             <h2>My Resumes</h2>
-            
+
             {loading ? (
               <div className="loading">Loading resumes...</div>
             ) : resumes.length > 0 ? (
@@ -140,20 +149,31 @@ const Resume = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {resumes.map(resume => (
+                    {resumes.map((resume) => (
                       <tr key={resume.id}>
                         <td>{resume.original_filename}</td>
                         <td>{formatFileSize(resume.file_size)}</td>
-                        <td>{new Date(resume.uploaded_at).toLocaleDateString()}</td>
                         <td>
-                          <button 
-                            onClick={() => handleDownload(resume.id, resume.original_filename)}
+                          {new Date(
+                            resume.uploaded_at
+                          ).toLocaleDateString()}
+                        </td>
+                        <td>
+                          <button
+                            onClick={() =>
+                              handleDownload(
+                                resume.id,
+                                resume.original_filename
+                              )
+                            }
                             className="btn-small btn-primary"
                           >
                             Download
                           </button>
-                          <button 
-                            onClick={() => handleDelete(resume.id)}
+                          <button
+                            onClick={() =>
+                              handleDelete(resume.id)
+                            }
                             className="btn-small btn-danger"
                           >
                             Delete
@@ -166,7 +186,9 @@ const Resume = () => {
               </div>
             ) : (
               <div className="empty-state">
-                <p>No resumes uploaded yet. Upload your first resume above!</p>
+                <p>
+                  No resumes uploaded yet. Upload your first resume above!
+                </p>
               </div>
             )}
           </div>
@@ -177,31 +199,3 @@ const Resume = () => {
 };
 
 export default Resume;
-=======
-import { useState } from "react";
-import Navbar from "../components/Navbar";
-
-export default function Resume() {
-  const [resume, setResume] = useState(null);
-
-  const handleUpload = (e) => {
-    setResume(e.target.files[0]);
-  };
-
-  return (
-    <div>
-      <Navbar />
-      <h2>Resume Management</h2>
-
-      <input type="file" accept=".pdf,.doc,.docx" onChange={handleUpload} />
-
-      {resume && (
-        <div style={{ marginTop: "15px" }}>
-          <p><strong>Uploaded Resume:</strong></p>
-          <p>{resume.name}</p>
-        </div>
-      )}
-    </div>
-  );
-}
->>>>>>> main
