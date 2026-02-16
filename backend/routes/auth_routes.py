@@ -1,50 +1,36 @@
 from flask import Blueprint, request, jsonify
-from services.auth_service import AuthService
-from utils.jwt_helper import token_required
+from db import users
+import bcrypt, jwt
+from config import Config
+from datetime import datetime, timedelta
 
-auth_bp = Blueprint('auth', __name__)
+auth = Blueprint("auth", __name__)
 
-@auth_bp.route('/register', methods=['POST'])
+@auth.route("/register", methods=["POST"])
 def register():
-    data = request.get_json()
-    
-    if not data or not data.get('email') or not data.get('name') or not data.get('password'):
-        return jsonify({'message': 'Missing required fields'}), 400
-    
-    result, error = AuthService.register_user(
-        email=data.get('email'),
-        name=data.get('name'),
-        password=data.get('password')
-    )
-    
-    if error:
-        return jsonify({'message': error}), 400
-    
-    return jsonify(result), 201
+    data = request.json
+    if users.find_one({"email": data["email"]}):
+        return jsonify({"message": "User exists"}), 400
 
-@auth_bp.route('/login', methods=['POST'])
+    hashed = bcrypt.hashpw(data["password"].encode(), bcrypt.gensalt())
+    users.insert_one({
+        "name": data["name"],
+        "email": data["email"],
+        "password": hashed
+    })
+    return jsonify({"message": "Registered successfully"})
+
+@auth.route("/login", methods=["POST"])
 def login():
-    data = request.get_json()
-    
-    if not data or not data.get('email') or not data.get('password'):
-        return jsonify({'message': 'Missing email or password'}), 400
-    
-    result, error = AuthService.login_user(
-        email=data.get('email'),
-        password=data.get('password')
-    )
-    
-    if error:
-        return jsonify({'message': error}), 401
-    
-    return jsonify(result), 200
+    data = request.json
+    user = users.find_one({"email": data["email"]})
 
-@auth_bp.route('/me', methods=['GET'])
-@token_required
-def get_current_user(current_user_id):
-    user = AuthService.get_user_by_id(current_user_id)
-    
-    if not user:
-        return jsonify({'message': 'User not found'}), 404
-    
-    return jsonify({'user': user.to_dict()}), 200
+    if user and bcrypt.checkpw(data["password"].encode(), user["password"]):
+        token = jwt.encode({
+            "email": user["email"],
+            "exp": datetime.utcnow() + timedelta(hours=24)
+        }, Config.JWT_SECRET, algorithm="HS256")
+
+        return jsonify({"token": token})
+
+    return jsonify({"message": "Invalid credentials"}), 401
