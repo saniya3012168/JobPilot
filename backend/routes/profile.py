@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
-from models.user import User
-from utils.jwt_helper import token_required
+from ..models.user import User
+from ..utils.jwt_helper import token_required
+
 from services.analytics_service import AnalyticsService
 from bson import ObjectId
 
