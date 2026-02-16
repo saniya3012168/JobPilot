@@ -1,31 +1,70 @@
-# Backend
+################################
+# 🔹 Backend (Python / Flask)
+################################
+
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-backend/database.db
-backend/uploads/
-backend/.env
+instance/
+.pytest_cache/
+
+# Virtual environments
 venv/
 env/
 ENV/
 
-# Frontend
+# Environment variables
+backend/.env
+.env
+
+# Database
+*.db
+backend/database.db
+
+# Uploads
+backend/uploads/
+
+################################
+# 🔹 Frontend (React)
+################################
+
 frontend/node_modules/
 frontend/build/
 frontend/.env
+node_modules/
+build/
 
-# IDEs
+################################
+# 🔹 VS Code / IDE
+################################
+
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# OS
+################################
+# 🔹 Logs
+################################
+
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+################################
+# 🔹 OS Files
+################################
+
 .DS_Store
 Thumbs.db
 
-# Logs
-*.log
+################################
+# 🔹 Misc
+################################
+
+coverage/
+dist/
