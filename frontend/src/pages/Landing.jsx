@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -49,3 +50,16 @@ const Landing = () => {
 };
 
 export default Landing;
+=======
+import { Link } from "react-router-dom";
+
+export default function Landing() {
+  return (
+    <div>
+      <h1>Welcome to JobPilot</h1>
+      <Link to="/login">Login</Link>
+      <Link to="/register">Register</Link>
+    </div>
+  );
+}
+>>>>>>> main
