@@ -1,48 +1,86 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, send_file
+from models.resume import Resume
 from models.user import User
 from utils.jwt_helper import token_required
-from services.analytics_service import AnalyticsService
+from utils.file_upload import save_file, delete_file, allowed_file
+import os
+from datetime import datetime
+from bson import ObjectId
 
-profile_bp = Blueprint('profile', __name__, url_prefix='/api/profile')
+resume_bp = Blueprint('resumes', __name__)
 
-@profile_bp.route('', methods=['GET'])
+@resume_bp.route('', methods=['GET'])
 @token_required
-def get_profile(current_user_id):
+def get_resumes(current_user_id):
     user = User.objects(id=current_user_id).first()
-    
     if not user:
         return jsonify({'message': 'User not found'}), 404
     
-    return jsonify({'profile': user.to_dict()}), 200
+    resumes = Resume.objects(user=user).order_by('-uploaded_at')
+    return jsonify({'resumes': [resume.to_dict() for resume in resumes]}), 200
 
-@profile_bp.route('', methods=['PUT'])
+@resume_bp.route('', methods=['POST'])
 @token_required
-def update_profile(current_user_id):
-    data = request.get_json()
-    
+def upload_resume(current_user_id):
     user = User.objects(id=current_user_id).first()
-    
     if not user:
         return jsonify({'message': 'User not found'}), 404
     
-    user.name = data.get('name', user.name)
-    user.phone = data.get('phone', user.phone)
-    user.location = data.get('location', user.location)
-    user.bio = data.get('bio', user.bio)
+    if 'file' not in request.files:
+        return jsonify({'message': 'No file provided'}), 400
     
-    # Check if email is being changed
-    if data.get('email') and data.get('email') != user.email:
-        existing_user = User.objects(email=data.get('email')).first()
-        if existing_user:
-            return jsonify({'message': 'Email already in use'}), 400
-        user.email = data.get('email')
+    file = request.files['file']
     
-    user.save()
+    if file.filename == '':
+        return jsonify({'message': 'No file selected'}), 400
     
-    return jsonify({'profile': user.to_dict(), 'message': 'Profile updated successfully'}), 200
+    if not allowed_file(file.filename):
+        return jsonify({'message': 'File type not allowed'}), 400
+    
+    file_info = save_file(file, current_user_id)
+    
+    if not file_info:
+        return jsonify({'message': 'Error uploading file'}), 500
+    
+    resume = Resume(
+        user=user,
+        filename=file_info['filename'],
+        original_filename=file_info['original_filename'],
+        file_path=file_info['file_path'],
+        file_size=file_info['file_size']
+    )
+    resume.save()
+    
+    return jsonify({'resume': resume.to_dict(), 'message': 'Resume uploaded successfully'}), 201
 
-@profile_bp.route('/analytics', methods=['GET'])
+@resume_bp.route('/<resume_id>', methods=['DELETE'])
 @token_required
-def get_analytics(current_user_id):
-    analytics = AnalyticsService.get_user_analytics(current_user_id)
-    return jsonify({'analytics': analytics}), 200
+def delete_resume(current_user_id, resume_id):
+    user = User.objects(id=current_user_id).first()
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+    
+    resume = Resume.objects(id=resume_id, user=user).first()
+    if not resume:
+        return jsonify({'message': 'Resume not found'}), 404
+    
+    delete_file(resume.file_path)
+    resume.delete()
+    
+    return jsonify({'message': 'Resume deleted successfully'}), 200
+
+@resume_bp.route('/<resume_id>/download', methods=['GET'])
+@token_required
+def download_resume(current_user_id, resume_id):
+    user = User.objects(id=current_user_id).first()
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+    
+    resume = Resume.objects(id=resume_id, user=user).first()
+    if not resume:
+        return jsonify({'message': 'Resume not found'}), 404
+    
+    if not os.path.exists(resume.file_path):
+        return jsonify({'message': 'File not found'}), 404
+    
+    return send_file(resume.file_path, as_attachment=True, download_name=resume.original_filename)

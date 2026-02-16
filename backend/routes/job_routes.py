@@ -10,7 +10,7 @@ def get_jobs(current_user_id):
     jobs = JobService.get_user_jobs(current_user_id)
     return jsonify({'jobs': [job.to_dict() for job in jobs]}), 200
 
-@job_bp.route('/<int:job_id>', methods=['GET'])
+@job_bp.route('/<job_id>', methods=['GET'])
 @token_required
 def get_job(current_user_id, job_id):
     job = JobService.get_job_by_id(job_id, current_user_id)
@@ -32,7 +32,7 @@ def create_job(current_user_id):
     
     return jsonify({'job': job.to_dict(), 'message': 'Job created successfully'}), 201
 
-@job_bp.route('/<int:job_id>', methods=['PUT'])
+@job_bp.route('/<job_id>', methods=['PUT'])
 @token_required
 def update_job(current_user_id, job_id):
     data = request.get_json()
@@ -44,7 +44,7 @@ def update_job(current_user_id, job_id):
     
     return jsonify({'job': job.to_dict(), 'message': 'Job updated successfully'}), 200
 
-@job_bp.route('/<int:job_id>', methods=['DELETE'])
+@job_bp.route('/<job_id>', methods=['DELETE'])
 @token_required
 def delete_job(current_user_id, job_id):
     success = JobService.delete_job(job_id, current_user_id)

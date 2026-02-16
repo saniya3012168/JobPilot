@@ -3,7 +3,7 @@ from models.user import User
 from utils.jwt_helper import token_required
 from services.analytics_service import AnalyticsService
 
-profile_bp = Blueprint('profile', __name__, url_prefix='/api/profile')
+profile_bp = Blueprint('profile', __name__)
 
 @profile_bp.route('', methods=['GET'])
 @token_required
