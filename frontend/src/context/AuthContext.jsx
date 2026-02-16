@@ -1,13 +1,12 @@
-<<<<<<< HEAD
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { authService } from '../services/authService';
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { authService } from "../services/authService";
 
 const AuthContext = createContext();
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
@@ -18,14 +17,14 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
-    
+    const storedToken = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
+
     if (storedToken && storedUser) {
       setToken(storedToken);
       setUser(JSON.parse(storedUser));
     }
-    
+
     setLoading(false);
   }, []);
 
@@ -33,17 +32,18 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authService.login(email, password);
       const { user, token } = response.data;
-      
+
       setUser(user);
       setToken(token);
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
-      
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+
       return { success: true };
     } catch (error) {
-      return { 
-        success: false, 
-        message: error.response?.data?.message || 'Login failed' 
+      return {
+        success: false,
+        message: error.response?.data?.message || "Login failed",
       };
     }
   };
@@ -52,17 +52,18 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authService.register(userData);
       const { user, token } = response.data;
-      
+
       setUser(user);
       setToken(token);
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
-      
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+
       return { success: true };
     } catch (error) {
-      return { 
-        success: false, 
-        message: error.response?.data?.message || 'Registration failed' 
+      return {
+        success: false,
+        message: error.response?.data?.message || "Registration failed",
       };
     }
   };
@@ -70,8 +71,8 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
   };
 
   const value = {
@@ -80,7 +81,7 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
-    isAuthenticated: !!token
+    isAuthenticated: !!token,
   };
 
   if (loading) {
@@ -93,23 +94,3 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-=======
-import { createContext, useState } from "react";
-
-export const AuthContext = createContext();
-
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-
-  const loginUser = (data) => {
-    localStorage.setItem("token", data.token);
-    setUser(data.user);
-  };
-
-  return (
-    <AuthContext.Provider value={{ user, loginUser }}>
-      {children}
-    </AuthContext.Provider>
-  );
-}
->>>>>>> main

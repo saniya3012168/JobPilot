@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -8,35 +7,36 @@ const Login = () => {
     email: '',
     password: ''
   });
+
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  
+
   const { login } = useAuth();
   const navigate = useNavigate();
-  
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-    
+
     const result = await login(formData.email, formData.password);
-    
+
     if (result.success) {
       navigate('/dashboard');
     } else {
       setError(result.message);
     }
-    
+
     setLoading(false);
   };
-  
+
   return (
     <div className="auth-page">
       <div className="auth-container">
@@ -44,9 +44,9 @@ const Login = () => {
           <h1>JobPilot</h1>
           <h2>Sign In</h2>
         </div>
-        
+
         {error && <div className="alert alert-error">{error}</div>}
-        
+
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
             <label htmlFor="email">Email</label>
@@ -60,7 +60,7 @@ const Login = () => {
               placeholder="Enter your email"
             />
           </div>
-          
+
           <div className="form-group">
             <label htmlFor="password">Password</label>
             <input
@@ -73,15 +73,20 @@ const Login = () => {
               placeholder="Enter your password"
             />
           </div>
-          
-          <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
+
+          <button
+            type="submit"
+            className="btn btn-primary btn-block"
+            disabled={loading}
+          >
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
-        
+
         <div className="auth-footer">
-          <p>Don't have an account? <Link to="/register">Sign Up</Link></p>
-          <p className="demo-info">Demo: email: <strong>demo@jobpilot.com</strong>, password: <strong>demo123</strong></p>
+          <p>
+            Don't have an account? <Link to="/register">Sign Up</Link>
+          </p>
         </div>
       </div>
     </div>
@@ -89,35 +94,3 @@ const Login = () => {
 };
 
 export default Login;
-=======
-import { useState, useContext } from "react";
-import { login } from "../services/authService";
-import { AuthContext } from "../context/AuthContext";
-
-export default function Login() {
-  const { loginUser } = useContext(AuthContext);
-  const [form, setForm] = useState({ email: "", password: "" });
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const res = await login(form);
-    loginUser(res.data);
-    window.location = "/dashboard";
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <input
-        placeholder="Email"
-        onChange={(e) => setForm({ ...form, email: e.target.value })}
-      />
-      <input
-        placeholder="Password"
-        type="password"
-        onChange={(e) => setForm({ ...form, password: e.target.value })}
-      />
-      <button type="submit">Login</button>
-    </form>
-  );
-}
->>>>>>> main

@@ -1,84 +1,67 @@
-<<<<<<< HEAD
-import axios from 'axios';
+import axios from "axios";
 
-// Determine API URL based on environment
+// ===============================
+// API BASE URL
+// ===============================
 const getApiUrl = () => {
-  // Check for environment variable first (most flexible)
+  // If you set REACT_APP_API_URL in Netlify, it will use that
   if (process.env.REACT_APP_API_URL) {
     return process.env.REACT_APP_API_URL;
   }
-  
-  // For production (deployed on Netlify)
-  if (window.location.hostname !== 'localhost') {
-    // TODO: Update this URL after deploying backend to Render
-    return 'https://jobpilot-backend.onrender.com/api';
+
+  // Production (Netlify deployed frontend)
+  if (window.location.hostname !== "localhost") {
+    return "https://jobpilot-k2yg.onrender.com/api";
   }
-  
-  // For local development
-  return 'http://localhost:5000/api';
+
+  // Local development
+  return "http://localhost:5000/api";
 };
 
 const API_BASE_URL = getApiUrl();
 
-console.log('🔗 API URL:', API_BASE_URL); // Helpful for debugging
+console.log("🔗 API URL:", API_BASE_URL);
 
+// ===============================
+// AXIOS INSTANCE
+// ===============================
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json'
+    "Content-Type": "application/json",
   },
-  timeout: 30000 // 30 second timeout (important for Render cold starts)
+  timeout: 30000, // Important for Render cold start
 });
 
-// Request interceptor
+// ===============================
+// REQUEST INTERCEPTOR
+// ===============================
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Response interceptor
+// ===============================
+// RESPONSE INTERCEPTOR
+// ===============================
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Handle 401 Unauthorized
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "/login";
     }
-    
-    // Log error for debugging
-    console.error('API Error:', {
-      message: error.message,
-      status: error.response?.status,
-      data: error.response?.data
-    });
-    
+
+    console.error("API Error:", error.response?.data || error.message);
     return Promise.reject(error);
   }
 );
 
 export default api;
-=======
-import axios from "axios";
-
-const API = axios.create({
-  baseURL: "http://localhost:5000",
-});
-
-API.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
-
-export default API;
->>>>>>> main

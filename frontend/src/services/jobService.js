@@ -1,89 +1,58 @@
-<<<<<<< HEAD
-import api from './api';
+import api from "./api";
 
 export const jobService = {
-  getAllJobs: () => {
-    return api.get('/jobs');
-  },
-  
-  getJob: (jobId) => {
-    return api.get(`/jobs/${jobId}`);
-  },
-  
-  createJob: (jobData) => {
-    return api.post('/jobs', jobData);
-  },
-  
-  updateJob: (jobId, jobData) => {
-    return api.put(`/jobs/${jobId}`, jobData);
-  },
-  
-  deleteJob: (jobId) => {
-    return api.delete(`/jobs/${jobId}`);
-  },
-  
-  // Resume services
-  getAllResumes: () => {
-    return api.get('/resumes');
-  },
-  
-  uploadResume: (formData) => {
-    return api.post('/resumes', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
-  },
-  
-  deleteResume: (resumeId) => {
-    return api.delete(`/resumes/${resumeId}`);
-  },
-  
-  downloadResume: (resumeId) => {
-    return api.get(`/resumes/${resumeId}/download`, {
-      responseType: 'blob'
-    });
-  },
-  
-  // Interview services
-  getAllInterviews: () => {
-    return api.get('/interviews');
-  },
-  
-  getUpcomingInterviews: () => {
-    return api.get('/interviews/upcoming');
-  },
-  
-  createInterview: (interviewData) => {
-    return api.post('/interviews', interviewData);
-  },
-  
-  updateInterview: (interviewId, interviewData) => {
-    return api.put(`/interviews/${interviewId}`, interviewData);
-  },
-  
-  deleteInterview: (interviewId) => {
-    return api.delete(`/interviews/${interviewId}`);
-  },
-  
-  // Profile services
-  getProfile: () => {
-    return api.get('/profile');
-  },
-  
-  updateProfile: (profileData) => {
-    return api.put('/profile', profileData);
-  },
-  
-  getAnalytics: () => {
-    return api.get('/profile/analytics');
-  }
-};
-=======
-import API from "./api";
+  // ================= JOBS =================
+  getAllJobs: () => api.get("/jobs"),
 
-export const getJobs = () => API.get("/jobs");
-export const addJob = (job) => API.post("/jobs", job);
-export const updateJob = (id, job) => API.put(`/jobs/${id}`, job);
-export const deleteJob = (id) => API.delete(`/jobs/${id}`);
->>>>>>> main
+  getJob: (jobId) => api.get(`/jobs/${jobId}`),
+
+  createJob: (jobData) => api.post("/jobs", jobData),
+
+  updateJob: (jobId, jobData) =>
+    api.put(`/jobs/${jobId}`, jobData),
+
+  deleteJob: (jobId) =>
+    api.delete(`/jobs/${jobId}`),
+
+  // ================= RESUMES =================
+  getAllResumes: () => api.get("/resumes"),
+
+  uploadResume: (formData) =>
+    api.post("/resumes", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }),
+
+  deleteResume: (resumeId) =>
+    api.delete(`/resumes/${resumeId}`),
+
+  downloadResume: (resumeId) =>
+    api.get(`/resumes/${resumeId}/download`, {
+      responseType: "blob",
+    }),
+
+  // ================= INTERVIEWS =================
+  getAllInterviews: () => api.get("/interviews"),
+
+  getUpcomingInterviews: () =>
+    api.get("/interviews/upcoming"),
+
+  createInterview: (interviewData) =>
+    api.post("/interviews", interviewData),
+
+  updateInterview: (interviewId, interviewData) =>
+    api.put(`/interviews/${interviewId}`, interviewData),
+
+  deleteInterview: (interviewId) =>
+    api.delete(`/interviews/${interviewId}`),
+
+  // ================= PROFILE =================
+  getProfile: () => api.get("/profile"),
+
+  updateProfile: (profileData) =>
+    api.put("/profile", profileData),
+
+  getAnalytics: () =>
+    api.get("/profile/analytics"),
+};
