@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
@@ -158,3 +159,15 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+=======
+import Navbar from "../components/Navbar";
+
+export default function Dashboard() {
+  return (
+    <div>
+      <Navbar />
+      <h1>Dashboard</h1>
+    </div>
+  );
+}
+>>>>>>> main
