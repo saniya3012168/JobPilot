@@ -1,80 +1,39 @@
 from flask import Blueprint, request, jsonify
-from db import users
-import bcrypt
-import jwt
-from config import Config
-from datetime import datetime, timedelta
+from services.auth_service import AuthService
 
-# ✅ IMPORTANT: Blueprint name must match routes/__init__.py
-auth_bp = Blueprint("auth", __name__)
+auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
-
-# =========================================
-# REGISTER
-# =========================================
-@auth_bp.route("/register", methods=["POST"])
+@auth_bp.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
-
-    if not data:
-        return jsonify({"message": "No data provided"}), 400
-
-    if not data.get("name") or not data.get("email") or not data.get("password"):
-        return jsonify({"message": "Missing required fields"}), 400
-
-    # Check if user already exists
-    if users.find_one({"email": data["email"]}):
-        return jsonify({"message": "User already exists"}), 400
-
-    # Hash password
-    hashed_password = bcrypt.hashpw(
-        data["password"].encode("utf-8"),
-        bcrypt.gensalt()
+    
+    if not data or not data.get('email') or not data.get('password') or not data.get('name'):
+        return jsonify({'message': 'Missing required fields'}), 400
+    
+    result, error = AuthService.register_user(
+        email=data.get('email'),
+        name=data.get('name'),
+        password=data.get('password')
     )
+    
+    if error:
+        return jsonify({'message': error}), 400
+    
+    return jsonify(result), 201
 
-    users.insert_one({
-        "name": data["name"],
-        "email": data["email"],
-        "password": hashed_password,
-        "created_at": datetime.utcnow()
-    })
-
-    return jsonify({"message": "Registered successfully"}), 201
-
-
-# =========================================
-# LOGIN
-# =========================================
-@auth_bp.route("/login", methods=["POST"])
+@auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
-
-    if not data:
-        return jsonify({"message": "No data provided"}), 400
-
-    user = users.find_one({"email": data.get("email")})
-
-    if not user:
-        return jsonify({"message": "Invalid credentials"}), 401
-
-    if not bcrypt.checkpw(
-        data["password"].encode("utf-8"),
-        user["password"]
-    ):
-        return jsonify({"message": "Invalid credentials"}), 401
-
-    # Generate JWT token
-    token = jwt.encode(
-        {
-            "user_id": str(user["_id"]),
-            "email": user["email"],
-            "exp": datetime.utcnow() + timedelta(hours=24)
-        },
-        Config.JWT_SECRET,
-        algorithm="HS256"
+    
+    if not data or not data.get('email') or not data.get('password'):
+        return jsonify({'message': 'Missing required fields'}), 400
+    
+    result, error = AuthService.login_user(
+        email=data.get('email'),
+        password=data.get('password')
     )
-
-    return jsonify({
-        "token": token,
-        "message": "Login successful"
-    }), 200
+    
+    if error:
+        return jsonify({'message': error}), 401
+    
+    return jsonify(result), 200
