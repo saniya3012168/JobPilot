@@ -1,7 +1,7 @@
+Flask
+Flask-Cors
+gunicorn
+pymongo
 bcrypt
 PyJWT
-pymongo
-flask
-flask-cors
-gunicorn
-dnspython
+python-dotenv
