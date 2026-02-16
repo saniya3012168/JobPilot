@@ -1,10 +1,33 @@
-from extensions import db
+from mongoengine import Document, StringField, DateTimeField, ReferenceField
 from datetime import datetime
 
-class Job(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    company = db.Column(db.String(150), nullable=False)
-    role = db.Column(db.String(150), nullable=False)
-    status = db.Column(db.String(50), nullable=False)
-    applied_on = db.Column(db.DateTime, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, nullable=False)
+class Job(Document):
+    meta = {'collection': 'jobs'}
+    
+    user = ReferenceField('User', required=True)
+    title = StringField(required=True, max_length=120)
+    company = StringField(required=True, max_length=120)
+    location = StringField(max_length=100)
+    salary = StringField(max_length=50)
+    description = StringField()
+    status = StringField(default='Applied')
+    created_at = DateTimeField(default=datetime.utcnow)
+    updated_at = DateTimeField(default=datetime.utcnow)
+    
+    def to_dict(self):
+        return {
+            'id': str(self.id),
+            'user_id': str(self.user.id),
+            'title': self.title,
+            'company': self.company,
+            'location': self.location,
+            'salary': self.salary,
+            'description': self.description,
+            'status': self.status,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None
+        }
+    
+    def save(self, *args, **kwargs):
+        self.updated_at = datetime.utcnow()
+        return super(Job, self).save(*args, **kwargs)

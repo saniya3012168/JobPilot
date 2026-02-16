@@ -1,21 +1,50 @@
 from flask import Blueprint, request, jsonify
-from models.user import User
-from services.auth_service import register_user, login_user
+from services.auth_service import AuthService
+from utils.jwt_helper import token_required
 
-auth_bp = Blueprint("auth", __name__)
+auth_bp = Blueprint('auth', __name__)
 
-@auth_bp.route("/register", methods=["POST"])
+@auth_bp.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
-    user = register_user(data["email"], data["password"])
-    return jsonify({"id": user.id})
+    
+    if not data or not data.get('email') or not data.get('name') or not data.get('password'):
+        return jsonify({'message': 'Missing required fields'}), 400
+    
+    result, error = AuthService.register_user(
+        email=data.get('email'),
+        name=data.get('name'),
+        password=data.get('password')
+    )
+    
+    if error:
+        return jsonify({'message': error}), 400
+    
+    return jsonify(result), 201
 
-@auth_bp.route("/login", methods=["POST"])
+@auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
-    user = User.query.filter_by(email=data["email"]).first()
+    
+    if not data or not data.get('email') or not data.get('password'):
+        return jsonify({'message': 'Missing email or password'}), 400
+    
+    result, error = AuthService.login_user(
+        email=data.get('email'),
+        password=data.get('password')
+    )
+    
+    if error:
+        return jsonify({'message': error}), 401
+    
+    return jsonify(result), 200
 
-    if not user or not user.check_password(data["password"]):
-        return jsonify({"error": "Invalid credentials"}), 401
-
-    return jsonify({"token": login_user(user)})
+@auth_bp.route('/me', methods=['GET'])
+@token_required
+def get_current_user(current_user_id):
+    user = AuthService.get_user_by_id(current_user_id)
+    
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+    
+    return jsonify({'user': user.to_dict()}), 200

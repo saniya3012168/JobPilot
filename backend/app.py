@@ -1,43 +1,57 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_cors import CORS
 from config import Config
-from extensions import db
+from models import init_db
+import os
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
-
-    db.init_app(app)
-    CORS(app)
-
-    # ✅ HOME PAGE (FIX)
-    @app.route("/", methods=["GET"])
-    def home():
-        return {
-            "message": "JobPilot Backend is running",
-            "status": "success"
+    
+    # Initialize MongoDB
+    init_db()
+    
+    # Initialize CORS
+    CORS(app, resources={
+        r"/api/*": {
+            "origins": ["http://localhost:3000"],
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization"],
+            "supports_credentials": True
         }
-
+    })
+    
+    # Create upload folders
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    
     # Register blueprints
-    from routes.auth_routes import auth_bp
-    from routes.job_routes import job_bp
-    from routes.resume_routes import resume_bp
-    from routes.interview_routes import interview_bp
-    from routes.profile_routes import profile_bp
-
-    app.register_blueprint(auth_bp, url_prefix="/api/auth")
-    app.register_blueprint(job_bp, url_prefix="/api/jobs")
-    app.register_blueprint(resume_bp, url_prefix="/api/resumes")
-    app.register_blueprint(interview_bp, url_prefix="/api/interviews")
-    app.register_blueprint(profile_bp, url_prefix="/api/profile")
-
-    with app.app_context():
-        db.create_all()
-
+    from routes import register_blueprints
+    register_blueprints(app)
+    
+    @app.route('/')
+    def index():
+        return jsonify({
+            'message': 'JobPilot API is running',
+            'version': '1.0.0',
+            'database': 'MongoDB Atlas ☁️'
+        }), 200
+    
+    @app.route('/api/health')
+    def health():
+        return jsonify({
+            'status': 'healthy',
+            'database': 'MongoDB Atlas'
+        }), 200
+    
     return app
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     app = create_app()
-    print("🚀 JobPilot backend running...")
-    app.run(debug=True)
+    print("="*50)
+    print("🚀 Starting JobPilot API server...")
+    print("="*50)
+    print("📍 Server: http://localhost:5000")
+    print("📍 Health: http://localhost:5000/api/health")
+    print("📍 Database: MongoDB Atlas ☁️")
+    print("="*50)
+    app.run(debug=True, host='0.0.0.0', port=5000)
