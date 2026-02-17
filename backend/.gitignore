@@ -1,8 +1,23 @@
+# dependencies
+node_modules/
+
+# production build
+build/
+
+# environment variables
 .env
-venv/
-__pycache__/
-*.pyc
-*.db
-uploads/
-instance/
-*.log
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# misc
+.DS_Store
+coverage/
+.cache/
+.parcel-cache/
+
+# IDE
+.vscode/
+.idea/
