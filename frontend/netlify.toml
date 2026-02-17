@@ -1,6 +1,7 @@
 [build]
   command = "npm run build"
   publish = "build"
+  base = "frontend"
 
 [[redirects]]
   from = "/*"
@@ -9,3 +10,4 @@
 
 [build.environment]
   NODE_VERSION = "18"
+  REACT_APP_API_URL = "https://jobpilot-k2yg.onrender.com/api"

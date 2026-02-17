@@ -6,183 +6,151 @@ import { useAuth } from '../context/AuthContext';
 
 const Profile = () => {
   const { user } = useAuth();
-
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    location: '',
-    bio: ''
+    name: '', email: '', phone: '', location: '', bio: ''
   });
-
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+  const [isError, setIsError] = useState(false);
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
+  useEffect(() => { fetchProfile(); }, []);
 
   const fetchProfile = async () => {
     try {
-      const response = await jobService.getProfile();
-      const profile = response.data.profile;
-
+      const res = await jobService.getProfile();
+      const p = res.data.profile;
       setFormData({
-        name: profile.name || '',
-        email: profile.email || '',
-        phone: profile.phone || '',
-        location: profile.location || '',
-        bio: profile.bio || ''
+        name: p.name || '', email: p.email || '',
+        phone: p.phone || '', location: p.location || '', bio: p.bio || ''
       });
-    } catch (error) {
-      console.error('Error fetching profile:', error);
+    } catch (err) {
+      console.error('Error:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    setMessage('');
-
     try {
       await jobService.updateProfile(formData);
-      setMessage('Profile updated successfully!');
+      setMessage('✅ Profile updated successfully!');
+      setIsError(false);
       setTimeout(() => setMessage(''), 3000);
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      setMessage('Failed to update profile');
+    } catch (err) {
+      setMessage('❌ Failed to update profile. Please try again.');
+      setIsError(true);
     } finally {
       setSaving(false);
     }
   };
-
-  if (loading) {
-    return (
-      <div className="app-layout">
-        <Navbar />
-        <div className="main-container">
-          <Sidebar />
-          <main className="content">
-            <div className="loading">Loading profile...</div>
-          </main>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="app-layout">
       <Navbar />
       <div className="main-container">
         <Sidebar />
-        <main className="content">
+        <div className="content">
           <div className="page-header">
-            <h1>Profile Settings</h1>
-            <p>Manage your account information</p>
+            <div>
+              <h1>Profile</h1>
+              <p>Manage your personal information</p>
+            </div>
           </div>
 
-          {message && (
-            <div className={`alert ${message.includes('success') ? 'alert-success' : 'alert-error'}`}>
-              {message}
-            </div>
-          )}
+          {loading ? (
+            <div className="spinner"></div>
+          ) : (
+            <div className="profile-section">
+              {/* Profile Form */}
+              <div className="profile-card">
+                <h2>Personal Information</h2>
 
-          <div className="profile-section">
-            <div className="profile-card">
-              <h2>Personal Information</h2>
+                {message && (
+                  <div className={`alert ${isError ? 'alert-error' : 'alert-success'}`}>
+                    {message}
+                  </div>
+                )}
 
-              <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                  <label>Full Name</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                  />
-                </div>
+                <form onSubmit={handleSubmit}>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>Full Name</label>
+                      <input
+                        type="text" value={formData.name}
+                        onChange={e => setFormData({ ...formData, name: e.target.value })}
+                        placeholder="Your full name"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Email Address</label>
+                      <input
+                        type="email" value={formData.email}
+                        onChange={e => setFormData({ ...formData, email: e.target.value })}
+                        placeholder="Your email"
+                      />
+                    </div>
+                  </div>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>Phone Number</label>
+                      <input
+                        type="text" value={formData.phone}
+                        onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                        placeholder="Your phone number"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Location</label>
+                      <input
+                        type="text" value={formData.location}
+                        onChange={e => setFormData({ ...formData, location: e.target.value })}
+                        placeholder="City, Country"
+                      />
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label>Bio</label>
+                    <textarea
+                      value={formData.bio}
+                      onChange={e => setFormData({ ...formData, bio: e.target.value })}
+                      placeholder="Tell us about yourself..."
+                      rows="4"
+                    />
+                  </div>
+                  <button type="submit" className="btn btn-primary" disabled={saving}>
+                    {saving ? '💾 Saving...' : '💾 Save Changes'}
+                  </button>
+                </form>
+              </div>
 
-                <div className="form-group">
-                  <label>Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Phone</label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Location</label>
-                  <input
-                    type="text"
-                    name="location"
-                    value={formData.location}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Bio</label>
-                  <textarea
-                    name="bio"
-                    value={formData.bio}
-                    onChange={handleChange}
-                    rows="3"
-                  ></textarea>
-                </div>
-
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  disabled={saving}
-                >
-                  {saving ? 'Saving...' : 'Save Changes'}
-                </button>
-              </form>
-            </div>
-
-            <div className="profile-card">
-              <h2>Account Details</h2>
-
-              <div className="account-info">
-                <div className="info-item">
-                  <span className="info-label">Email:</span>
-                  <span className="info-value">{user?.email}</span>
-                </div>
-
-                <div className="info-item">
-                  <span className="info-label">Member Since:</span>
-                  <span className="info-value">
-                    {user?.created_at
-                      ? new Date(user.created_at).toLocaleDateString()
-                      : 'N/A'}
-                  </span>
+              {/* Account Info */}
+              <div className="profile-card">
+                <h2>Account Info</h2>
+                <div className="account-info">
+                  <div className="info-item">
+                    <span className="info-label">Name</span>
+                    <span className="info-value">{formData.name || 'Not set'}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">Email</span>
+                    <span className="info-value">{formData.email || 'Not set'}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">Location</span>
+                    <span className="info-value">{formData.location || 'Not set'}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">Phone</span>
+                    <span className="info-value">{formData.phone || 'Not set'}</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </main>
+          )}
+        </div>
       </div>
     </div>
   );

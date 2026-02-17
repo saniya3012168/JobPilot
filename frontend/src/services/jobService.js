@@ -1,58 +1,101 @@
-import api from "./api";
+import api from './api';
 
 export const jobService = {
-  // ================= JOBS =================
-  getAllJobs: () => api.get("/jobs"),
+  // ===== JOBS =====
+  getAllJobs: async () => {
+    const response = await api.get('/jobs');
+    return response;
+  },
 
-  getJob: (jobId) => api.get(`/jobs/${jobId}`),
+  getJob: async (jobId) => {
+    const response = await api.get(`/jobs/${jobId}`);
+    return response;
+  },
 
-  createJob: (jobData) => api.post("/jobs", jobData),
+  createJob: async (jobData) => {
+    const response = await api.post('/jobs', jobData);
+    return response;
+  },
 
-  updateJob: (jobId, jobData) =>
-    api.put(`/jobs/${jobId}`, jobData),
+  updateJob: async (jobId, jobData) => {
+    const response = await api.put(`/jobs/${jobId}`, jobData);
+    return response;
+  },
 
-  deleteJob: (jobId) =>
-    api.delete(`/jobs/${jobId}`),
+  deleteJob: async (jobId) => {
+    const response = await api.delete(`/jobs/${jobId}`);
+    return response;
+  },
 
-  // ================= RESUMES =================
-  getAllResumes: () => api.get("/resumes"),
+  // ===== INTERVIEWS =====
+  getInterviews: async () => {
+    const response = await api.get('/interviews');
+    return response;
+  },
 
-  uploadResume: (formData) =>
-    api.post("/resumes", formData, {
+  getUpcomingInterviews: async () => {
+    const response = await api.get('/interviews/upcoming');
+    return response;
+  },
+
+  createInterview: async (interviewData) => {
+    const response = await api.post('/interviews', interviewData);
+    return response;
+  },
+
+  updateInterview: async (interviewId, interviewData) => {
+    const response = await api.put(`/interviews/${interviewId}`, interviewData);
+    return response;
+  },
+
+  deleteInterview: async (interviewId) => {
+    const response = await api.delete(`/interviews/${interviewId}`);
+    return response;
+  },
+
+  // ===== ANALYTICS =====
+  getAnalytics: async () => {
+    const response = await api.get('/profile/analytics');
+    return response;
+  },
+
+  // ===== RESUMES =====
+  getResumes: async () => {
+    const response = await api.get('/resumes');
+    return response;
+  },
+
+  uploadResume: async (formData) => {
+    const response = await api.post('/resumes', formData, {
       headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }),
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    return response;
+  },
 
-  deleteResume: (resumeId) =>
-    api.delete(`/resumes/${resumeId}`),
+  deleteResume: async (resumeId) => {
+    const response = await api.delete(`/resumes/${resumeId}`);
+    return response;
+  },
 
-  downloadResume: (resumeId) =>
-    api.get(`/resumes/${resumeId}/download`, {
-      responseType: "blob",
-    }),
+  downloadResume: async (resumeId) => {
+    const response = await api.get(`/resumes/${resumeId}/download`, {
+      responseType: 'blob'
+    });
+    return response;
+  },
 
-  // ================= INTERVIEWS =================
-  getAllInterviews: () => api.get("/interviews"),
+  // ===== PROFILE =====
+  getProfile: async () => {
+    const response = await api.get('/profile');
+    return response;
+  },
 
-  getUpcomingInterviews: () =>
-    api.get("/interviews/upcoming"),
-
-  createInterview: (interviewData) =>
-    api.post("/interviews", interviewData),
-
-  updateInterview: (interviewId, interviewData) =>
-    api.put(`/interviews/${interviewId}`, interviewData),
-
-  deleteInterview: (interviewId) =>
-    api.delete(`/interviews/${interviewId}`),
-
-  // ================= PROFILE =================
-  getProfile: () => api.get("/profile"),
-
-  updateProfile: (profileData) =>
-    api.put("/profile", profileData),
-
-  getAnalytics: () =>
-    api.get("/profile/analytics"),
+  updateProfile: async (profileData) => {
+    const response = await api.put('/profile', profileData);
+    return response;
+  }
 };
+
+export default jobService;

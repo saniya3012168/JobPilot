@@ -2,33 +2,28 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 const Sidebar = () => {
+  const navItems = [
+    { path: '/dashboard', icon: '📊', label: 'Dashboard' },
+    { path: '/jobs', icon: '💼', label: 'Jobs' },
+    { path: '/interviews', icon: '🗓️', label: 'Interviews' },
+    { path: '/resume', icon: '📄', label: 'Resume' },
+    { path: '/analytics', icon: '📈', label: 'Analytics' },
+    { path: '/profile', icon: '👤', label: 'Profile' },
+  ];
+
   return (
     <aside className="sidebar">
       <nav className="sidebar-nav">
-        <NavLink to="/dashboard" className={({ isActive }) => isActive ? 'active' : ''}>
-          <span className="icon">📊</span>
-          Dashboard
-        </NavLink>
-        <NavLink to="/jobs" className={({ isActive }) => isActive ? 'active' : ''}>
-          <span className="icon">💼</span>
-          Jobs
-        </NavLink>
-        <NavLink to="/resume" className={({ isActive }) => isActive ? 'active' : ''}>
-          <span className="icon">📄</span>
-          Resume
-        </NavLink>
-        <NavLink to="/interviews" className={({ isActive }) => isActive ? 'active' : ''}>
-          <span className="icon">🗓️</span>
-          Interviews
-        </NavLink>
-        <NavLink to="/analytics" className={({ isActive }) => isActive ? 'active' : ''}>
-          <span className="icon">📈</span>
-          Analytics
-        </NavLink>
-        <NavLink to="/profile" className={({ isActive }) => isActive ? 'active' : ''}>
-          <span className="icon">👤</span>
-          Profile
-        </NavLink>
+        {navItems.map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            className={({ isActive }) => isActive ? 'active' : ''}
+          >
+            <span className="icon">{item.icon}</span>
+            {item.label}
+          </NavLink>
+        ))}
       </nav>
     </aside>
   );

@@ -3,90 +3,79 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
-
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
   const { login } = useAuth();
   const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-
-    const result = await login(formData.email, formData.password);
-
-    if (result.success) {
+    try {
+      await login(email, password);
       navigate('/dashboard');
-    } else {
-      setError(result.message);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Invalid email or password');
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
     <div className="auth-page">
       <div className="auth-container">
         <div className="auth-header">
-          <h1>JobPilot</h1>
-          <h2>Sign In</h2>
+          <h1>✈️ JobPilot</h1>
+          <h2>Welcome Back!</h2>
         </div>
 
         {error && <div className="alert alert-error">{error}</div>}
 
-        <form onSubmit={handleSubmit} className="auth-form">
+        <form className="auth-form" onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label>Email Address</label>
             <input
               type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
+              required
             />
           </div>
-
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label>Password</label>
             <input
               type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
+              required
             />
           </div>
-
-          <button
-            type="submit"
-            className="btn btn-primary btn-block"
-            disabled={loading}
-          >
-            {loading ? 'Signing in...' : 'Sign In'}
+          <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
+            {loading ? 'Signing in...' : '🔑 Sign In'}
           </button>
         </form>
 
+        <div className="demo-info">
+          <strong>🚀 Demo Account:</strong><br />
+          Email: demo@jobpilot.com<br />
+          Password: demo123<br />
+          <button
+            className="btn btn-secondary btn-small"
+            style={{ marginTop: '0.75rem' }}
+            onClick={() => { setEmail('demo@jobpilot.com'); setPassword('demo123'); }}
+          >
+            Fill Demo Credentials
+          </button>
+        </div>
+
         <div className="auth-footer">
-          <p>
-            Don't have an account? <Link to="/register">Sign Up</Link>
-          </p>
+          Don't have an account?{' '}
+          <Link to="/register">Create one here</Link>
         </div>
       </div>
     </div>
