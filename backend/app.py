@@ -15,22 +15,12 @@ def create_app():
     init_db()
 
     # ==============================
-    # CORS Configuration
+    # 🔥 CORS FIX (Allow Netlify + Local)
     # ==============================
     CORS(
         app,
-        resources={
-            r"/api/*": {
-                "origins": [
-                    "http://localhost:3000",
-                    "https://jobpilot.netlify.app",
-                    "https://*.netlify.app"
-                ],
-                "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-                "allow_headers": ["Content-Type", "Authorization"],
-                "supports_credentials": True,
-            }
-        },
+        supports_credentials=True,
+        resources={r"/*": {"origins": "*"}}
     )
 
     # ==============================
@@ -56,7 +46,7 @@ def create_app():
         }), 200
 
     # ==============================
-    # Health Check Route
+    # Health Check
     # ==============================
     @app.route("/api/health")
     def health():
@@ -68,19 +58,11 @@ def create_app():
     return app
 
 
-# 🔥 Required for Gunicorn
+# 🔥 Required for Gunicorn (Render)
 app = create_app()
 
 
-# Run locally only
+# Run locally
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-
-    print("🚀 Starting JobPilot API server...")
-    print(f"📍 Server: http://localhost:{port}")
-
-    app.run(
-        host="0.0.0.0",
-        port=port,
-        debug=False
-    )
+    app.run(host="0.0.0.0", port=port)
