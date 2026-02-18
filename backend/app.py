@@ -15,12 +15,22 @@ def create_app():
     init_db()
 
     # ==============================
-    # 🔥 CORS FIX (Allow Netlify + Local)
+    # CORS Configuration
     # ==============================
     CORS(
         app,
-        supports_credentials=True,
-        resources={r"/*": {"origins": "*"}}
+        resources={
+            r"/api/*": {
+                "origins": [
+                    "http://localhost:3000",
+                    "https://cerulean-sunshine-f2b76b.netlify.app",
+                    "https://*.netlify.app"
+                ],
+                "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+                "allow_headers": ["Content-Type", "Authorization"],
+                "supports_credentials": True
+            }
+        }
     )
 
     # ==============================
@@ -46,7 +56,7 @@ def create_app():
         }), 200
 
     # ==============================
-    # Health Check
+    # Health Check Route
     # ==============================
     @app.route("/api/health")
     def health():
@@ -58,11 +68,28 @@ def create_app():
     return app
 
 
-# 🔥 Required for Gunicorn (Render)
+# ==================================================
+# 🔥 IMPORTANT: Required for Gunicorn (Render)
+# ==================================================
 app = create_app()
 
 
-# Run locally
+# ==================================================
+# Run Locally (Only for Development)
+# ==================================================
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+
+    print("=" * 50)
+    print("🚀 Starting JobPilot API server...")
+    print("=" * 50)
+    print(f"📍 Server: http://localhost:{port}")
+    print("📍 Database: MongoDB Atlas ☁️")
+    print("=" * 50)
+
+    app.run(
+        host="0.0.0.0",
+        port=port,
+        debug=False,
+        use_reloader=False
+    )
