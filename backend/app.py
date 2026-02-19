@@ -23,6 +23,7 @@ def create_app():
             r"/api/*": {
                 "origins": [
                     "http://localhost:3000",
+                    "https://jobpilotss.netlify.app",
                     "https://cerulean-sunshine-f2b76b.netlify.app",
                     "https://*.netlify.app"
                 ],
