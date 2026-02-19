@@ -15,23 +15,12 @@ def create_app():
     init_db()
 
     # ==============================
-    # CORS Configuration
+    # CORS Configuration - Allow All (Temporary)
     # ==============================
     CORS(
         app,
-        resources={
-            r"/api/*": {
-                "origins": [
-                    "http://localhost:3000",
-                    "https://jobpilotss.netlify.app",
-                    "https://cerulean-sunshine-f2b76b.netlify.app",
-                    "https://*.netlify.app"
-                ],
-                "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-                "allow_headers": ["Content-Type", "Authorization"],
-                "supports_credentials": True
-            }
-        }
+        resources={r"/api/*": {"origins": "*"}},
+        supports_credentials=False
     )
 
     # ==============================
