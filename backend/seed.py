@@ -1,26 +1,41 @@
 from app import create_app
 from models import User, Job, Resume, Interview
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta, timezone
 import random
 import os
+import sys
 
 
 def seed_database():
-    app = create_app()
+    try:
+        app = create_app()
+    except Exception as e:
+        print("❌ Failed to create app / connect to DB")
+        print("Error:", e)
+        sys.exit(1)
 
     with app.app_context():
         print("\n" + "=" * 50)
         print("🌱 SEEDING MONGODB ATLAS DATABASE")
         print("=" * 50)
 
-        # Clear existing data
-        print("\n🗑️  Clearing existing data...")
-        User.objects.delete()
-        Job.objects.delete()
-        Resume.objects.delete()
-        Interview.objects.delete()
-        print("✓ Database cleared")
+        # ============================
+        # Clear existing data safely
+        # ============================
+        try:
+            print("\n🗑️  Clearing existing data...")
+            User.objects.delete()
+            Job.objects.delete()
+            Resume.objects.delete()
+            Interview.objects.delete()
+            print("✓ Database cleared")
+        except Exception as e:
+            print("❌ Error clearing database:", e)
+            sys.exit(1)
 
+        # ============================
+        # Create Demo User
+        # ============================
         print("\n👤 Creating demo user...")
         demo_user = User(
             email="demo@jobpilot.com",
@@ -33,56 +48,40 @@ def seed_database():
         demo_user.save()
         print("✓ Demo user created")
 
-        # Sample data
+        # ============================
+        # Sample Data
+        # ============================
         companies = [
-            "Google",
-            "Amazon",
-            "Microsoft",
-            "Apple",
-            "Tesla",
-            "Adobe",
-            "Netflix",
-            "Flipkart",
-            "TCS",
-            "Infosys",
-            "Accenture",
-            "Wipro",
-            "IBM",
-            "Oracle",
-            "Salesforce",
+            "Google", "Amazon", "Microsoft", "Apple", "Tesla",
+            "Adobe", "Netflix", "Flipkart", "TCS", "Infosys",
+            "Accenture", "Wipro", "IBM", "Oracle", "Salesforce",
         ]
 
         job_titles = [
-            "Senior Software Engineer",
-            "Full Stack Developer",
-            "Backend Engineer",
-            "Frontend Developer",
-            "DevOps Engineer",
-            "Data Engineer",
-            "Technical Lead",
-            "Solution Architect",
-            "Cloud Engineer",
-            "Site Reliability Engineer",
+            "Senior Software Engineer", "Full Stack Developer",
+            "Backend Engineer", "Frontend Developer",
+            "DevOps Engineer", "Data Engineer",
+            "Technical Lead", "Solution Architect",
+            "Cloud Engineer", "Site Reliability Engineer",
         ]
 
         locations = [
-            "Bangalore, India",
-            "Hyderabad, India",
-            "Pune, India",
-            "Mumbai, India",
-            "Remote",
-            "San Francisco, USA",
-            "Seattle, USA",
-            "New York, USA",
+            "Bangalore, India", "Hyderabad, India",
+            "Pune, India", "Mumbai, India",
+            "Remote", "San Francisco, USA",
+            "Seattle, USA", "New York, USA",
         ]
 
         statuses = ["Applied", "Interview", "Offer", "Rejected"]
         status_weights = [0.5, 0.25, 0.1, 0.15]
 
+        # ============================
+        # Create Jobs
+        # ============================
         print("\n💼 Creating 20 job applications...")
         jobs = []
 
-        for i in range(20):
+        for _ in range(20):
             job = Job(
                 user=demo_user,
                 title=random.choice(job_titles),
@@ -91,7 +90,7 @@ def seed_database():
                 salary=f"${random.randint(80, 180)}K - ${random.randint(180, 250)}K",
                 description="Exciting opportunity to work with cutting-edge technologies and talented team.",
                 status=random.choices(statuses, weights=status_weights)[0],
-                created_at=datetime.now(UTC)
+                created_at=datetime.now(timezone.utc)
                 - timedelta(days=random.randint(1, 90)),
             )
             job.save()
@@ -99,7 +98,11 @@ def seed_database():
 
         print(f"✓ Created {len(jobs)} jobs")
 
+        # ============================
+        # Create Interviews
+        # ============================
         print("\n🗓️  Creating 3 interviews...")
+
         interview_types = [
             "Phone Screen",
             "Technical Round",
@@ -113,17 +116,21 @@ def seed_database():
                 job=jobs[i],
                 company=jobs[i].company,
                 position=jobs[i].title,
-                interview_date=datetime.now(UTC)
+                interview_date=datetime.now(timezone.utc)
                 + timedelta(days=i + 2, hours=random.randint(9, 17)),
                 interview_type=random.choice(interview_types),
                 location="Zoom" if i < 2 else "Office",
-                notes="Prepare system design and coding questions. Review company products.",
+                notes="Prepare system design and coding questions.",
             )
             interview.save()
 
         print("✓ Created 3 interviews")
 
+        # ============================
+        # Create Resumes
+        # ============================
         print("\n📄 Creating 2 sample resumes...")
+
         upload_folder = "uploads/resumes"
         os.makedirs(upload_folder, exist_ok=True)
 
@@ -142,7 +149,7 @@ def seed_database():
                 original_filename=f"Aarav_Sharma_Resume_v{i+1}.pdf",
                 file_path=filepath,
                 file_size=os.path.getsize(filepath),
-                uploaded_at=datetime.now(UTC)
+                uploaded_at=datetime.now(timezone.utc)
                 - timedelta(days=15 * (i + 1)),
             )
             resume.save()

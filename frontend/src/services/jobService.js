@@ -28,6 +28,11 @@ export const jobService = {
   },
 
   // ===== INTERVIEWS =====
+  getAllInterviews: async () => {
+    const response = await api.get('/interviews');
+    return response;
+  },
+
   getInterviews: async () => {
     const response = await api.get('/interviews');
     return response;
@@ -60,6 +65,11 @@ export const jobService = {
   },
 
   // ===== RESUMES =====
+  getAllResumes: async () => {
+    const response = await api.get('/resumes');
+    return response;
+  },
+
   getResumes: async () => {
     const response = await api.get('/resumes');
     return response;
